@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+:root {
+  --bg:          #f1f5f9;
+  --bg-card:     #ffffff;
+  --bg-subtle:   #f8fafc;
+  --text:        #0f172a;
+  --text-muted:  #64748b;
+  --text-light:  #94a3b8;
+  --border:      #e2e8f0;
+  --primary:     #6366f1;
+  --primary-dk:  #4f46e5;
+  --primary-bg:  #eef2ff;
+  --success:     #22c55e;
+  --danger:      #ef4444;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:   0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,.14), 0 4px 12px rgba(0,0,0,.08);
+  --radius:      14px;
+  --radius-sm:   8px;
+  --radius-full: 9999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:         #0a0f1e;
+    --bg-card:    #131929;
+    --bg-subtle:  #0f172a;
+    --text:       #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-light: #64748b;
+    --border:     #1e2d45;
+    --primary:    #818cf8;
+    --primary-dk: #6366f1;
+    --primary-bg: #1e1b4b;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,.4);
+    --shadow-md:  0 4px 16px rgba(0,0,0,.5);
+    --shadow-lg:  0 12px 40px rgba(0,0,0,.6);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--primary); color: white; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+input, select, textarea, button { font-family: inherit; }
+
+a { color: inherit; text-decoration: none; }
+
+/* Hover cards */
+.card-hover {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg) !important;
+}
+.stat-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Responsive grids */
+@media (max-width: 768px) {
+  .catalog-grid     { grid-template-columns: 1fr !important; }
+  .product-detail-grid { grid-template-columns: 1fr !important; }
+  .cart-grid        { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .hidden { display: none !important; }
+}
