@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { products, categories } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { AddToCart } from "@/components/add-to-cart";
+import { ProductCarousel } from "@/components/product-carousel";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle, Truck, CreditCard, Shield } from "lucide-react";
@@ -28,19 +29,14 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 80px" }}>
-      <Link href="/products" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, color: "var(--text-muted)", marginBottom: 32, padding: "8px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-card)" }}>
+      <Link href="/products" className="link-back" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, color: "var(--text-muted)", marginBottom: 32, padding: "8px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-card)" }}>
         <ArrowLeft size={14} /> Volver al catálogo
       </Link>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" }} className="product-detail-grid">
-        {/* Image */}
+        {/* Image carousel */}
         <div style={{ position: "sticky", top: 88 }}>
-          <div style={{ aspectRatio: "1/1", borderRadius: 20, background: "var(--bg-card)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", boxShadow: "var(--shadow-md)" }}>
-            {p.images?.[0]
-              ? <img src={p.images[0]} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <span style={{ fontSize: 100, opacity: 0.4 }}>📦</span>
-            }
-          </div>
+          <ProductCarousel images={p.images ?? []} name={p.name} />
         </div>
 
         {/* Info */}

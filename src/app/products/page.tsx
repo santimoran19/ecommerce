@@ -59,12 +59,14 @@ export default async function ProductsPage({ searchParams }: Props) {
                 <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", display: "block", marginBottom: 10, letterSpacing: "0.05em", textTransform: "uppercase" }}>Categoría</label>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   <Link href={`/products${q ? `?q=${q}` : ""}${sort ? `&sort=${sort}` : ""}`}
-                    style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: !category ? 700 : 500, color: !category ? "var(--primary)" : "var(--text-muted)", background: !category ? "var(--primary-bg)" : "transparent", transition: "all 0.15s" }}>
+                    className="btn-filter-link"
+                    style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: !category ? 700 : 500, color: !category ? "var(--primary)" : "var(--text-muted)", background: !category ? "var(--primary-bg)" : "transparent" }}>
                     Todas
                   </Link>
                   {cats.map((c) => (
                     <Link key={c.id} href={`/products?category=${c.slug}${q ? `&q=${q}` : ""}${sort ? `&sort=${sort}` : ""}`}
-                      style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: category === c.slug ? 700 : 500, color: category === c.slug ? "var(--primary)" : "var(--text-muted)", background: category === c.slug ? "var(--primary-bg)" : "transparent", transition: "all 0.15s" }}>
+                      className="btn-filter-link"
+                      style={{ padding: "8px 12px", borderRadius: "var(--radius-sm)", fontSize: 14, fontWeight: category === c.slug ? 700 : 500, color: category === c.slug ? "var(--primary)" : "var(--text-muted)", background: category === c.slug ? "var(--primary-bg)" : "transparent" }}>
                       {c.name}
                     </Link>
                   ))}
@@ -90,11 +92,11 @@ export default async function ProductsPage({ searchParams }: Props) {
                 </select>
               </div>
 
-              <button type="submit" style={{ padding: "12px", borderRadius: "var(--radius-sm)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(99,102,241,0.3)" }}>
+              <button type="submit" className="btn-primary" style={{ padding: "12px", borderRadius: "var(--radius-sm)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(99,102,241,0.3)" }}>
                 Aplicar filtros
               </button>
               {(q || category || min || max || sort) && (
-                <Link href="/products" style={{ textAlign: "center", fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>
+                <Link href="/products" className="link-text" style={{ textAlign: "center", fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>
                   Limpiar filtros
                 </Link>
               )}
@@ -109,7 +111,7 @@ export default async function ProductsPage({ searchParams }: Props) {
               <p style={{ fontSize: 56, marginBottom: 16 }}>🔍</p>
               <p style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>Sin resultados</p>
               <p style={{ fontSize: 14, marginBottom: 24 }}>Probá con otros filtros o términos de búsqueda</p>
-              <Link href="/products" style={{ display: "inline-block", padding: "12px 24px", borderRadius: "var(--radius-sm)", background: "var(--primary-bg)", color: "var(--primary)", fontWeight: 600, fontSize: 14 }}>
+              <Link href="/products" className="btn-ghost" style={{ display: "inline-block", padding: "12px 24px", borderRadius: "var(--radius-sm)", background: "var(--primary-bg)", color: "var(--primary)", fontWeight: 600, fontSize: 14, border: "1px solid var(--primary)" }}>
                 Ver todos los productos
               </Link>
             </div>

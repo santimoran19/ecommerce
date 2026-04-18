@@ -20,6 +20,7 @@ export function AddToCart({ id, name, price, image, disabled }: Props) {
     <button
       onClick={handleAdd}
       disabled={disabled}
+      className={!disabled && !added ? "btn-primary" : ""}
       style={{
         width: "100%",
         display: "flex",

@@ -41,7 +41,7 @@ export default function CartPage() {
         <p style={{ color: "var(--text-muted)", marginBottom: 32, lineHeight: 1.6 }}>
           Explorá nuestro catálogo y encontrá los mejores productos de tecnología.
         </p>
-        <Link href="/products" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 600, fontSize: 15, boxShadow: "0 4px 16px rgba(99,102,241,0.35)" }}>
+        <Link href="/products" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 600, fontSize: 15, boxShadow: "0 4px 16px rgba(99,102,241,0.35)" }}>
           Ver productos →
         </Link>
       </div>
@@ -51,7 +51,7 @@ export default function CartPage() {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 80px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
-        <Link href="/products" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "var(--text-muted)", padding: "8px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-card)" }}>
+        <Link href="/products" className="link-back" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "var(--text-muted)", padding: "8px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-card)" }}>
           <ArrowLeft size={15} /> Seguir comprando
         </Link>
         <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--text)", letterSpacing: "-0.03em" }}>
@@ -72,18 +72,18 @@ export default function CartPage() {
                 <p style={{ fontWeight: 800, fontSize: 18, color: "var(--primary)", letterSpacing: "-0.02em" }}>${item.price.toLocaleString("es-AR")}</p>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--bg)" }}>
-                    <button onClick={() => setQty(item.id, item.quantity - 1)} disabled={item.quantity <= 1} style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
+                    <button onClick={() => setQty(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="btn-qty" style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
                       <Minus size={13} />
                     </button>
                     <span style={{ width: 36, textAlign: "center", fontSize: 14, fontWeight: 700, color: "var(--text)" }}>{item.quantity}</span>
-                    <button onClick={() => setQty(item.id, item.quantity + 1)} style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
+                    <button onClick={() => setQty(item.id, item.quantity + 1)} className="btn-qty" style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
                       <Plus size={13} />
                     </button>
                   </div>
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "space-between" }}>
-                <button onClick={() => remove(item.id)} style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", background: "#fef2f2", border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer", color: "var(--danger)" }}>
+                <button onClick={() => remove(item.id)} className="btn-remove" style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", background: "#fef2f2", border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer", color: "var(--danger)" }}>
                   <Trash2 size={15} />
                 </button>
                 <p style={{ fontWeight: 800, fontSize: 16, color: "var(--text)", letterSpacing: "-0.02em" }}>${(item.price * item.quantity).toLocaleString("es-AR")}</p>
@@ -110,7 +110,7 @@ export default function CartPage() {
             <span>Total</span>
             <span style={{ color: "var(--primary)" }}>${total().toLocaleString("es-AR")}</span>
           </div>
-          <button onClick={handleCheckout} disabled={loading} style={{
+          <button onClick={handleCheckout} disabled={loading} className={loading ? "" : "btn-primary"} style={{
             width: "100%", marginTop: 20, padding: "15px", borderRadius: "var(--radius-sm)",
             background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
             color: "white", fontWeight: 700, fontSize: 15, border: "none", cursor: loading ? "not-allowed" : "pointer",
