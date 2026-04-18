@@ -1,8 +1,8 @@
 import { db } from "@/db";
 import { products, categories } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import Link from "next/link";
 import { AdminProductActions } from "./actions";
+import { Package } from "lucide-react";
 
 export default async function AdminProductsPage() {
   const [rows, cats] = await Promise.all([
@@ -13,48 +13,68 @@ export default async function AdminProductsPage() {
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px 60px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
         <div>
-          <Link href="/admin" className="text-sm hover:opacity-70 mb-1 block" style={{ color: "var(--text-muted)" }}>← Admin</Link>
-          <h1 className="text-3xl font-bold" style={{ color: "var(--text)" }}>Productos</h1>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.04em" }}>Productos</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>{rows.length} producto{rows.length !== 1 ? "s" : ""} en el catálogo</p>
         </div>
         <AdminProductActions categories={cats} />
       </div>
 
-      <div className="rounded-2xl overflow-hidden" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                {["Producto", "Categoría", "Precio", "Stock", "Acciones"].map((h) => (
-                  <th key={h} className="px-6 py-3 text-left font-semibold" style={{ color: "var(--text-muted)" }}>{h}</th>
+              <tr style={{ background: "var(--bg-subtle)" }}>
+                {["Producto", "Categoría", "Precio", "Stock", "Acciones"].map(h => (
+                  <th key={h} style={{ padding: "12px 20px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {rows.map(({ product: p, category: c }) => (
-                <tr key={p.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl shrink-0" style={{ background: "var(--bg)" }}>
-                        {p.images?.[0] ? <img src={p.images[0]} alt="" className="w-full h-full object-cover rounded-lg" /> : "📦"}
+                <tr key={p.id} style={{ borderTop: "1px solid var(--border)", transition: "background 0.1s" }}>
+                  <td style={{ padding: "14px 20px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 8, overflow: "hidden", flexShrink: 0, border: "1px solid var(--border)", background: "var(--bg-subtle)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {p.images?.[0] ? (
+                          <img src={p.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <Package size={18} color="var(--text-muted)" />
+                        )}
                       </div>
-                      <span className="font-medium" style={{ color: "var(--text)" }}>{p.name}</span>
+                      <div>
+                        <div style={{ fontWeight: 700, color: "var(--text)", marginBottom: 2 }}>{p.name}</div>
+                        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "monospace" }}>{p.slug}</div>
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4" style={{ color: "var(--text-muted)" }}>{c?.name ?? "-"}</td>
-                  <td className="px-6 py-4 font-semibold" style={{ color: "var(--primary)" }}>${Number(p.price).toLocaleString("es-AR")}</td>
-                  <td className="px-6 py-4">
-                    <span className="font-semibold" style={{ color: p.stock > 0 ? "#22c55e" : "#ef4444" }}>{p.stock}</span>
+                  <td style={{ padding: "14px 20px" }}>
+                    <span style={{ padding: "3px 10px", borderRadius: 99, fontSize: 12, fontWeight: 600, background: "var(--bg-subtle)", color: "var(--text-muted)", border: "1px solid var(--border)" }}>
+                      {c?.name ?? "—"}
+                    </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td style={{ padding: "14px 20px" }}>
+                    <span style={{ fontWeight: 800, fontSize: 15, color: "var(--text)" }}>${Number(p.price).toLocaleString("es-AR")}</span>
+                  </td>
+                  <td style={{ padding: "14px 20px" }}>
+                    <span style={{ fontWeight: 700, fontSize: 14, ...(p.stock > 10 ? { color: "#16a34a" } : p.stock > 0 ? { color: "#d97706" } : { color: "#dc2626" }) }}>
+                      {p.stock > 0 ? p.stock : "Sin stock"}
+                    </span>
+                  </td>
+                  <td style={{ padding: "14px 20px" }}>
                     <AdminProductActions categories={cats} product={p} />
                   </td>
                 </tr>
               ))}
               {rows.length === 0 && (
-                <tr><td colSpan={5} className="px-6 py-8 text-center" style={{ color: "var(--text-muted)" }}>Sin productos</td></tr>
+                <tr>
+                  <td colSpan={5} style={{ padding: "60px", textAlign: "center", color: "var(--text-muted)" }}>
+                    <Package size={32} style={{ margin: "0 auto 12px", display: "block", opacity: 0.3 }} />
+                    <p style={{ fontWeight: 600 }}>Sin productos todavía</p>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
