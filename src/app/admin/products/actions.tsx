@@ -12,7 +12,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
       <div style={{ width: "100%", maxWidth: 540, maxHeight: "90vh", overflowY: "auto", borderRadius: "var(--radius-lg)", background: "var(--bg-card)", border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px", borderBottom: "1px solid var(--border)", position: "sticky", top: 0, background: "var(--bg-card)", zIndex: 1 }}>
           <h2 style={{ fontWeight: 800, fontSize: 17, color: "var(--text)", margin: 0 }}>{title}</h2>
-          <button onClick={onClose} style={{ padding: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", borderRadius: "var(--radius-sm)" }}>
+          <button onClick={onClose} className="btn-icon" style={{ padding: 6, background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", borderRadius: "var(--radius-sm)" }}>
             <X size={20} />
           </button>
         </div>
@@ -133,10 +133,10 @@ function ProductForm({ product, categories, onClose }: { product?: Product; cate
       </div>
 
       <div style={{ display: "flex", gap: 12, marginTop: 4 }}>
-        <button type="button" onClick={onClose} style={{ flex: 1, padding: "12px", borderRadius: "var(--radius-sm)", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+        <button type="button" onClick={onClose} className="btn-ghost" style={{ flex: 1, padding: "12px", borderRadius: "var(--radius-sm)", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
           Cancelar
         </button>
-        <button type="submit" disabled={loading} style={{ flex: 2, padding: "12px", borderRadius: "var(--radius-sm)", background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14, border: "none", cursor: loading ? "not-allowed" : "pointer", boxShadow: loading ? "none" : "0 2px 8px rgba(99,102,241,0.3)" }}>
+        <button type="submit" disabled={loading} className={loading ? "" : "btn-primary"} style={{ flex: 2, padding: "12px", borderRadius: "var(--radius-sm)", background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14, border: "none", cursor: loading ? "not-allowed" : "pointer", boxShadow: loading ? "none" : "0 2px 8px rgba(99,102,241,0.3)" }}>
           {loading ? "Guardando..." : product ? "Actualizar producto" : "Crear producto"}
         </button>
       </div>
@@ -157,7 +157,7 @@ export function AdminProductActions({ categories, product }: { categories: Categ
   if (!product) {
     return (
       <>
-        <button onClick={() => setModal("create")} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 20px", borderRadius: "var(--radius-full)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(99,102,241,0.3)" }}>
+        <button onClick={() => setModal("create")} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 20px", borderRadius: "var(--radius-full)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(99,102,241,0.3)" }}>
           <Plus size={16} /> Nuevo producto
         </button>
         {modal === "create" && (
@@ -171,10 +171,10 @@ export function AdminProductActions({ categories, product }: { categories: Categ
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-      <button onClick={() => setModal("edit")} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-subtle)", color: "var(--text)", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+      <button onClick={() => setModal("edit")} className="btn-ghost" style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-subtle)", color: "var(--text)", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
         <Pencil size={13} /> Editar
       </button>
-      <button onClick={handleDelete} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid #fecaca", background: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+      <button onClick={handleDelete} className="btn-danger" style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: "var(--radius-sm)", border: "1px solid #fecaca", background: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
         <Trash2 size={13} /> Eliminar
       </button>
       {modal === "edit" && (

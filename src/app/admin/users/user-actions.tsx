@@ -23,13 +23,14 @@ export function UserRoleToggle({ userId, currentRole }: { userId: string; curren
     <button
       onClick={toggle}
       disabled={loading}
+      className="btn-ghost"
       style={{
         padding: "4px 12px",
         borderRadius: 99,
         fontSize: 11,
         fontWeight: 700,
         cursor: "pointer",
-        border: "none",
+        border: "1px solid transparent",
         ...(isAdmin
           ? { color: "#7c3aed", background: "#ede9fe" }
           : { color: "#6b7280", background: "#f3f4f6" }),

@@ -66,7 +66,7 @@ export function DeleteOrderButton({ orderId }: { orderId: string }) {
   }
 
   return (
-    <button onClick={handleDelete} style={{ padding: "6px 8px", borderRadius: "var(--radius-sm)", background: "transparent", border: "1px solid #fecaca", color: "#dc2626", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600 }}>
+    <button onClick={handleDelete} className="btn-danger" style={{ padding: "6px 8px", borderRadius: "var(--radius-sm)", background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600 }}>
       <Trash2 size={13} /> Eliminar
     </button>
   );
