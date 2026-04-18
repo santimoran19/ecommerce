@@ -85,7 +85,7 @@ export default async function ProfilePage() {
                 { href: "/products", label: "Explorar catálogo", desc: "Descubrí nuevos productos", icon: "🛍️" },
                 { href: "/cart", label: "Mi carrito", desc: "Ver productos guardados", icon: "🛒" },
               ].map((item) => (
-                <Link key={item.href} href={item.href} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", color: "var(--text)", textDecoration: "none", transition: "all 0.15s", background: "var(--bg)" }}>
+                <Link key={item.href} href={item.href} className="link-quick" style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", color: "var(--text)", textDecoration: "none", background: "var(--bg)" }}>
                   <span style={{ fontSize: 22 }}>{item.icon}</span>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>{item.label}</div>

@@ -56,7 +56,7 @@ export default function ProfileForm({ initialName, initialImage }: { initialName
           style={{ width: "100%", padding: "11px 14px", borderRadius: "var(--radius-sm)", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)", fontSize: 14, outline: "none" }}
         />
       </div>
-      <button type="submit" disabled={loading} style={{
+      <button type="submit" disabled={loading} className={loading ? "" : "btn-primary"} style={{
         padding: "12px", borderRadius: "var(--radius-sm)", background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
         color: "white", fontWeight: 700, fontSize: 14, border: "none", cursor: loading ? "not-allowed" : "pointer",
         boxShadow: "0 2px 8px rgba(99,102,241,0.3)", marginTop: 4,

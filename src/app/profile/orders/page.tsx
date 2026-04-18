@@ -42,7 +42,7 @@ export default async function ProfileOrdersPage() {
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
-          <Link href="/profile" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text)" }}>
+          <Link href="/profile" className="btn-icon" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text)" }}>
             <ArrowLeft size={16} />
           </Link>
           <div>
@@ -56,7 +56,7 @@ export default async function ProfileOrdersPage() {
             <ShoppingBag size={48} color="var(--text-muted)" style={{ margin: "0 auto 16px", display: "block" }} />
             <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>Todavía no hiciste ningún pedido</h2>
             <p style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 24 }}>Explorá el catálogo y encontrá lo que necesitás.</p>
-            <Link href="/products" style={{ display: "inline-block", padding: "12px 28px", borderRadius: "var(--radius-full)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14 }}>
+            <Link href="/products" className="btn-primary" style={{ display: "inline-block", padding: "12px 28px", borderRadius: "var(--radius-full)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14 }}>
               Ver catálogo
             </Link>
           </div>
