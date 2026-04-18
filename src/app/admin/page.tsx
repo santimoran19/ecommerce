@@ -1,8 +1,8 @@
 import { db } from "@/db";
-import { products, orders, users } from "@/db/schema";
-import { count, eq, sql } from "drizzle-orm";
+import { products, orders, users, orderItems } from "@/db/schema";
+import { count, eq, sql, desc } from "drizzle-orm";
 import Link from "next/link";
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, ArrowRight } from "lucide-react";
+import { Package, ShoppingCart, Users as UsersIcon, DollarSign, TrendingUp, ArrowRight, Clock } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   PENDING:   { label: "Pendiente",  color: "#d97706", bg: "#fef3c7" },
@@ -13,102 +13,114 @@ const statusConfig: Record<string, { label: string; color: string; bg: string }>
 };
 
 export default async function AdminPage() {
-  const [[{ totalProducts }], [{ totalOrders }], [{ totalUsers }], [{ revenue }]] = await Promise.all([
+  const [[{ totalProducts }], [{ totalOrders }], [{ totalUsers }], [{ revenue }], [{ pending }]] = await Promise.all([
     db.select({ totalProducts: count() }).from(products),
     db.select({ totalOrders: count() }).from(orders),
     db.select({ totalUsers: count() }).from(users),
     db.select({ revenue: sql<string>`coalesce(sum(total), 0)` }).from(orders).where(eq(orders.status, "PAID")),
+    db.select({ pending: count() }).from(orders).where(eq(orders.status, "PENDING")),
   ]);
 
-  const recentOrders = await db.select().from(orders).orderBy(orders.createdAt).limit(8);
+  const recentOrders = await db
+    .select({ order: orders, user: users })
+    .from(orders)
+    .leftJoin(users, eq(orders.userId, users.id))
+    .orderBy(desc(orders.createdAt))
+    .limit(6);
 
   const stats = [
-    { label: "Productos", value: totalProducts, icon: <Package size={22} />, href: "/admin/products", color: "#6366f1", bg: "#eef2ff" },
-    { label: "Órdenes totales", value: totalOrders, icon: <ShoppingCart size={22} />, href: "/admin/orders", color: "#8b5cf6", bg: "#f5f3ff" },
-    { label: "Usuarios", value: totalUsers, icon: <Users size={22} />, href: "#", color: "#06b6d4", bg: "#ecfeff" },
-    { label: "Ingresos (pagados)", value: `$${Number(revenue).toLocaleString("es-AR")}`, icon: <DollarSign size={22} />, href: "#", color: "#22c55e", bg: "#f0fdf4" },
+    { label: "Productos",        value: totalProducts,                                 icon: Package,     color: "#6366f1", bg: "#eef2ff",  href: "/admin/products" },
+    { label: "Órdenes totales",  value: totalOrders,                                   icon: ShoppingCart, color: "#8b5cf6", bg: "#f5f3ff", href: "/admin/orders" },
+    { label: "Usuarios",         value: totalUsers,                                    icon: UsersIcon,    color: "#06b6d4", bg: "#ecfeff",  href: "/admin/users" },
+    { label: "Ingresos pagados", value: `$${Number(revenue).toLocaleString("es-AR")}`, icon: DollarSign,  color: "#22c55e", bg: "#f0fdf4",  href: "/admin/orders" },
   ];
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 24px 80px" }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px 60px" }}>
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 40, flexWrap: "wrap", gap: 16 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
         <div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--primary-bg)", color: "var(--primary)", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 99, letterSpacing: "0.06em", marginBottom: 10 }}>
-            <TrendingUp size={12} /> PANEL DE ADMINISTRACIÓN
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--primary-bg)", color: "var(--primary)", fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 99, letterSpacing: "0.06em", marginBottom: 10 }}>
+            <TrendingUp size={11} /> PANEL DE ADMINISTRACIÓN
           </div>
-          <h1 style={{ fontSize: 32, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em" }}>Dashboard</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em", margin: 0 }}>Dashboard</h1>
           <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>Resumen general de tu tienda</p>
         </div>
-        <Link href="/admin/products" style={{
-          display: "flex", alignItems: "center", gap: 8, padding: "12px 22px", borderRadius: "var(--radius-full)",
-          background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 14,
-          boxShadow: "0 4px 16px rgba(99,102,241,0.35)",
-        }}>
-          <Package size={16} /> Nuevo producto
-        </Link>
+        {pending > 0 && (
+          <Link href="/admin/orders" style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", borderRadius: "var(--radius)", background: "#fef3c7", border: "1px solid #fde68a", color: "#92400e", fontSize: 13, fontWeight: 700 }}>
+            <Clock size={15} /> {pending} orden{pending !== 1 ? "es" : ""} pendiente{pending !== 1 ? "s" : ""}
+          </Link>
+        )}
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16, marginBottom: 40 }}>
-        {stats.map((s) => (
-          <Link key={s.label} href={s.href} className="stat-card" style={{
-            display: "flex", alignItems: "center", gap: 16, padding: "24px",
-            background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius)",
-            boxShadow: "var(--shadow-sm)",
-          }}>
-            <div style={{ width: 50, height: 50, borderRadius: 14, background: s.bg, color: s.color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              {s.icon}
-            </div>
-            <div>
-              <p style={{ fontSize: 24, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em", lineHeight: 1 }}>{s.value}</p>
-              <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>{s.label}</p>
-            </div>
+      {/* Stats grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: 16, marginBottom: 36 }}>
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <Link key={s.label} href={s.href} style={{ display: "flex", alignItems: "center", gap: 16, padding: "22px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", boxShadow: "var(--shadow-sm)", transition: "transform 0.15s, box-shadow 0.15s", textDecoration: "none" }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: s.bg, color: s.color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Icon size={22} />
+              </div>
+              <div>
+                <p style={{ fontSize: 26, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em", lineHeight: 1, margin: 0 }}>{s.value}</p>
+                <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4, margin: "4px 0 0" }}>{s.label}</p>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Quick actions */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12, marginBottom: 36 }}>
+        {[
+          { href: "/admin/products", label: "Nuevo producto", emoji: "➕" },
+          { href: "/admin/orders", label: "Ver órdenes", emoji: "📦" },
+          { href: "/admin/users", label: "Ver usuarios", emoji: "👥" },
+        ].map(a => (
+          <Link key={a.href} href={a.href} style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderRadius: "var(--radius)", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text)", fontSize: 14, fontWeight: 600, transition: "all 0.15s" }}>
+            <span>{a.emoji}</span> {a.label}
           </Link>
         ))}
       </div>
 
       {/* Recent orders */}
-      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", boxShadow: "var(--shadow-sm)", overflow: "hidden" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px", borderBottom: "1px solid var(--border)" }}>
-          <div>
-            <h2 style={{ fontWeight: 800, fontSize: 17, color: "var(--text)", letterSpacing: "-0.02em" }}>Órdenes recientes</h2>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 2 }}>Últimas {recentOrders.length} transacciones</p>
-          </div>
+      <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid var(--border)" }}>
+          <h2 style={{ fontWeight: 800, fontSize: 16, color: "var(--text)", margin: 0 }}>Órdenes recientes</h2>
           <Link href="/admin/orders" style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 600, color: "var(--primary)" }}>
-            Ver todas <ArrowRight size={14} />
+            Ver todas <ArrowRight size={13} />
           </Link>
         </div>
 
         {recentOrders.length === 0 ? (
           <div style={{ padding: "60px 24px", textAlign: "center", color: "var(--text-muted)" }}>
-            <ShoppingCart size={36} style={{ margin: "0 auto 12px", opacity: 0.3 }} />
-            <p style={{ fontSize: 15, fontWeight: 600 }}>Sin órdenes todavía</p>
+            <ShoppingCart size={32} style={{ margin: "0 auto 12px", display: "block", opacity: 0.3 }} />
+            <p style={{ fontSize: 14, fontWeight: 600 }}>Sin órdenes todavía</p>
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
               <thead>
                 <tr style={{ background: "var(--bg-subtle)" }}>
-                  {["ID", "Total", "Estado", "Fecha"].map(h => (
-                    <th key={h} style={{ padding: "12px 24px", textAlign: "left", fontSize: 12, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}>{h}</th>
+                  {["ID", "Cliente", "Total", "Estado", "Fecha"].map(h => (
+                    <th key={h} style={{ padding: "11px 20px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {recentOrders.map((o) => {
-                  const s = statusConfig[o.status] ?? { label: o.status, color: "#94a3b8", bg: "#f1f5f9" };
+                {recentOrders.map(({ order: o, user: u }) => {
+                  const st = statusConfig[o.status] ?? { label: o.status, color: "#94a3b8", bg: "#f1f5f9" };
                   return (
                     <tr key={o.id} style={{ borderTop: "1px solid var(--border)" }}>
-                      <td style={{ padding: "16px 24px", fontFamily: "monospace", fontSize: 12, color: "var(--text-muted)" }}>#{o.id.slice(0, 8)}</td>
-                      <td style={{ padding: "16px 24px", fontWeight: 700, fontSize: 15, color: "var(--text)", letterSpacing: "-0.02em" }}>${Number(o.total).toLocaleString("es-AR")}</td>
-                      <td style={{ padding: "16px 24px" }}>
-                        <span style={{ padding: "4px 12px", borderRadius: 99, fontSize: 12, fontWeight: 700, color: s.color, background: s.bg }}>
-                          {s.label}
-                        </span>
+                      <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 12, color: "var(--text-muted)" }}>#{o.id.slice(0, 8).toUpperCase()}</td>
+                      <td style={{ padding: "14px 20px", color: "var(--text)", fontWeight: 500 }}>{u?.name ?? u?.email ?? "—"}</td>
+                      <td style={{ padding: "14px 20px", fontWeight: 800, color: "var(--text)" }}>${Number(o.total).toLocaleString("es-AR")}</td>
+                      <td style={{ padding: "14px 20px" }}>
+                        <span style={{ padding: "4px 12px", borderRadius: 99, fontSize: 12, fontWeight: 700, color: st.color, background: st.bg }}>{st.label}</span>
                       </td>
-                      <td style={{ padding: "16px 24px", color: "var(--text-muted)" }}>{new Date(o.createdAt).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                      <td style={{ padding: "14px 20px", color: "var(--text-muted)", fontSize: 13 }}>{new Date(o.createdAt).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}</td>
                     </tr>
                   );
                 })}
