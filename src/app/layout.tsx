@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </div>
             <div style={{ borderTop: "1px solid var(--border)", padding: "16px 24px", textAlign: "center", fontSize: 12, color: "var(--text-light)" }}>
-              © 2026 EcommercePro — Hecho con Next.js 16 · Drizzle ORM · Mercado Pago
+              © 2026 - Santiago Morán - Todos los derechos reservados.
             </div>
           </footer>
         </Providers>
