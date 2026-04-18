@@ -13,7 +13,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const [user] = await db.select().from(users).where(eq(users.email, String(creds?.email)));
         if (!user?.password) return null;
         const ok = await bcrypt.compare(String(creds?.password), user.password);
-        return ok ? { id: user.id, email: user.email, name: user.name, role: user.role } : null;
+        if (!ok) return null;
+        if (!user.emailVerified) throw new Error("email_not_verified");
+        return { id: user.id, email: user.email, name: user.name, role: user.role };
       },
     }),
   ],

@@ -1,12 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Store, Mail, Lock, AlertCircle } from "lucide-react";
+import { Store, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const params = useSearchParams();
+  const verified = params.get("verified");
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,10 +18,72 @@ export default function LoginPage() {
     setLoading(true); setError("");
     const res = await signIn("credentials", { ...form, redirect: false });
     setLoading(false);
-    if (res?.error) { setError("Email o contraseña incorrectos"); return; }
+    if (res?.error) {
+      if (res.error.includes("email_not_verified")) {
+        setError("Debés verificar tu email antes de ingresar. Revisá tu casilla.");
+      } else {
+        setError("Email o contraseña incorrectos");
+      }
+      return;
+    }
     router.push("/"); router.refresh();
   }
 
+  return (
+    <div style={{ width: "100%", maxWidth: 400 }}>
+      <div style={{ marginBottom: 36 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em", marginBottom: 6 }}>Bienvenido de nuevo</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: 15 }}>Ingresá con tu cuenta para continuar</p>
+      </div>
+
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {verified && (
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderRadius: "var(--radius-sm)", background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#16a34a", fontSize: 14 }}>
+            <CheckCircle size={16} /> Email verificado correctamente. ¡Ya podés ingresar!
+          </div>
+        )}
+        {error && (
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderRadius: "var(--radius-sm)", background: "#fef2f2", border: "1px solid #fecaca", color: "var(--danger)", fontSize: 14 }}>
+            <AlertCircle size={16} /> {error}
+          </div>
+        )}
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", display: "block", marginBottom: 8 }}>Email</label>
+          <div style={{ position: "relative" }}>
+            <Mail size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
+            <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="tu@email.com"
+              style={{ width: "100%", padding: "13px 14px 13px 42px", borderRadius: "var(--radius-sm)", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text)", fontSize: 15, outline: "none" }} />
+          </div>
+        </div>
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", display: "block", marginBottom: 8 }}>Contraseña</label>
+          <div style={{ position: "relative" }}>
+            <Lock size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
+            <input type="password" required value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="••••••••"
+              style={{ width: "100%", padding: "13px 14px 13px 42px", borderRadius: "var(--radius-sm)", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text)", fontSize: 15, outline: "none" }} />
+          </div>
+        </div>
+        <button type="submit" disabled={loading} style={{
+          padding: "14px", borderRadius: "var(--radius-sm)", background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
+          color: "white", fontWeight: 700, fontSize: 15, border: "none", cursor: loading ? "not-allowed" : "pointer",
+          boxShadow: "0 4px 16px rgba(99,102,241,0.35)", marginTop: 4,
+        }}>
+          {loading ? "Ingresando..." : "Ingresar →"}
+        </button>
+      </form>
+
+      <p style={{ textAlign: "center", marginTop: 28, fontSize: 14, color: "var(--text-muted)" }}>
+        ¿No tenés cuenta?{" "}
+        <Link href="/register" style={{ color: "var(--primary)", fontWeight: 700 }}>Registrate gratis</Link>
+      </p>
+      <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: "var(--radius-sm)", background: "var(--bg-subtle)", border: "1px solid var(--border)", fontSize: 13, color: "var(--text-muted)" }}>
+        <strong style={{ color: "var(--text)" }}>Demo admin:</strong> admin@demo.com / admin123
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
   return (
     <div style={{ minHeight: "calc(100vh - 68px)", display: "flex" }}>
       {/* Left panel */}
@@ -41,51 +105,9 @@ export default function LoginPage() {
 
       {/* Right panel */}
       <div style={{ width: "100%", maxWidth: 480, display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 32px", background: "var(--bg)" }}>
-        <div style={{ width: "100%", maxWidth: 400 }}>
-          <div style={{ marginBottom: 36 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em", marginBottom: 6 }}>Bienvenido de nuevo</h1>
-            <p style={{ color: "var(--text-muted)", fontSize: 15 }}>Ingresá con tu cuenta para continuar</p>
-          </div>
-
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {error && (
-              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderRadius: "var(--radius-sm)", background: "#fef2f2", border: "1px solid #fecaca", color: "var(--danger)", fontSize: 14 }}>
-                <AlertCircle size={16} /> {error}
-              </div>
-            )}
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", display: "block", marginBottom: 8 }}>Email</label>
-              <div style={{ position: "relative" }}>
-                <Mail size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-                <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="tu@email.com"
-                  style={{ width: "100%", padding: "13px 14px 13px 42px", borderRadius: "var(--radius-sm)", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text)", fontSize: 15, outline: "none" }} />
-              </div>
-            </div>
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", display: "block", marginBottom: 8 }}>Contraseña</label>
-              <div style={{ position: "relative" }}>
-                <Lock size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-                <input type="password" required value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="••••••••"
-                  style={{ width: "100%", padding: "13px 14px 13px 42px", borderRadius: "var(--radius-sm)", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text)", fontSize: 15, outline: "none" }} />
-              </div>
-            </div>
-            <button type="submit" disabled={loading} style={{
-              padding: "14px", borderRadius: "var(--radius-sm)", background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
-              color: "white", fontWeight: 700, fontSize: 15, border: "none", cursor: loading ? "not-allowed" : "pointer",
-              boxShadow: "0 4px 16px rgba(99,102,241,0.35)", marginTop: 4,
-            }}>
-              {loading ? "Ingresando..." : "Ingresar →"}
-            </button>
-          </form>
-
-          <p style={{ textAlign: "center", marginTop: 28, fontSize: 14, color: "var(--text-muted)" }}>
-            ¿No tenés cuenta?{" "}
-            <Link href="/register" style={{ color: "var(--primary)", fontWeight: 700 }}>Registrate gratis</Link>
-          </p>
-          <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: "var(--radius-sm)", background: "var(--bg-subtle)", border: "1px solid var(--border)", fontSize: 13, color: "var(--text-muted)" }}>
-            <strong style={{ color: "var(--text)" }}>Demo admin:</strong> admin@demo.com / admin123
-          </div>
-        </div>
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
