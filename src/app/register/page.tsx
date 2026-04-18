@@ -107,7 +107,7 @@ export default function RegisterPage() {
               <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>Usá al menos 6 caracteres con letras y números.</p>
             </div>
 
-            <button type="submit" disabled={loading} style={{
+            <button type="submit" disabled={loading} className={loading ? "" : "btn-primary"} style={{
               padding: "14px", borderRadius: "var(--radius-sm)", marginTop: 4,
               background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
               color: "white", fontWeight: 700, fontSize: 15, border: "none",

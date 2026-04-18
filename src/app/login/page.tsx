@@ -63,7 +63,7 @@ function LoginForm() {
               style={{ width: "100%", padding: "13px 14px 13px 42px", borderRadius: "var(--radius-sm)", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text)", fontSize: 15, outline: "none" }} />
           </div>
         </div>
-        <button type="submit" disabled={loading} style={{
+        <button type="submit" disabled={loading} className={loading ? "" : "btn-primary"} style={{
           padding: "14px", borderRadius: "var(--radius-sm)", background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
           color: "white", fontWeight: 700, fontSize: 15, border: "none", cursor: loading ? "not-allowed" : "pointer",
           boxShadow: "0 4px 16px rgba(99,102,241,0.35)", marginTop: 4,

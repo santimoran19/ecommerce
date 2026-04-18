@@ -66,14 +66,13 @@ export function Navbar() {
         {/* Desktop nav */}
         <div style={{ display: "flex", alignItems: "center", gap: 4 }} className="hidden md:flex">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} style={{
+            <Link key={l.href} href={l.href} className="nav-link" style={{
               padding: "8px 16px",
               borderRadius: "var(--radius-sm)",
               fontSize: 14,
               fontWeight: isActive(l.href) ? 600 : 500,
               color: isActive(l.href) ? "var(--primary)" : "var(--text-muted)",
               background: isActive(l.href) ? "var(--primary-bg)" : "transparent",
-              transition: "all 0.15s",
             }}>
               {l.label}
             </Link>
@@ -83,12 +82,12 @@ export function Navbar() {
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {isAdmin && (
-            <Link href="/admin" title="Panel Admin" style={{ padding: 8, borderRadius: "var(--radius-sm)", color: "var(--text-muted)", display: "flex" }} className="hidden md:flex">
+            <Link href="/admin" title="Panel Admin" style={{ padding: 8, borderRadius: "var(--radius-sm)", color: "var(--text-muted)", display: "flex" }} className="btn-icon hidden md:flex">
               <Shield size={19} />
             </Link>
           )}
 
-          <Link href="/cart" style={{ position: "relative", padding: 8, borderRadius: "var(--radius-sm)", color: "var(--text)", display: "flex", background: count > 0 ? "var(--primary-bg)" : "transparent", transition: "all 0.15s" }}>
+          <Link href="/cart" className="btn-icon" style={{ position: "relative", padding: 8, borderRadius: "var(--radius-sm)", color: "var(--text)", display: "flex", background: count > 0 ? "var(--primary-bg)" : "transparent" }}>
             <ShoppingCart size={20} color={count > 0 ? "var(--primary)" : undefined} />
             {count > 0 && (
               <span style={{
@@ -168,9 +167,8 @@ export function Navbar() {
 
                   <div style={{ padding: "6px", borderTop: "1px solid var(--border)" }}>
                     <button onClick={() => { setDropdownOpen(false); signOut({ callbackUrl: "/" }); }}
-                      style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: "var(--radius-sm)", color: "var(--danger)", fontSize: 14, fontWeight: 500, width: "100%", background: "none", border: "none", cursor: "pointer", textAlign: "left", transition: "background 0.1s" }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#fef2f2")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                      className="btn-danger"
+                      style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: "var(--radius-sm)", color: "var(--danger)", fontSize: 14, fontWeight: 500, width: "100%", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
                     >
                       <LogOut size={15} /> Cerrar sesión
                     </button>
@@ -179,7 +177,7 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="hidden md:flex" style={{
+            <Link href="/login" className="btn-primary hidden md:flex" style={{
               padding: "9px 20px",
               borderRadius: "var(--radius-full)",
               background: "linear-gradient(135deg, var(--primary), #8b5cf6)",
@@ -187,7 +185,6 @@ export function Navbar() {
               fontSize: 14,
               fontWeight: 600,
               boxShadow: "0 2px 8px rgba(99,102,241,0.35)",
-              transition: "all 0.2s",
               letterSpacing: "0.01em",
             }}>
               Ingresar
@@ -239,10 +236,10 @@ export function Navbar() {
             </div>
           ) : (
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-              <Link href="/login" onClick={() => setOpen(false)} style={{ flex: 1, padding: "12px", borderRadius: "var(--radius)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 600, fontSize: 14, textAlign: "center" }}>
+              <Link href="/login" onClick={() => setOpen(false)} className="btn-primary" style={{ flex: 1, padding: "12px", borderRadius: "var(--radius)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 600, fontSize: 14, textAlign: "center" }}>
                 Ingresar
               </Link>
-              <Link href="/register" onClick={() => setOpen(false)} style={{ padding: "12px 16px", borderRadius: "var(--radius)", border: "1px solid var(--border)", color: "var(--text-muted)", fontSize: 14 }}>
+              <Link href="/register" onClick={() => setOpen(false)} className="btn-ghost" style={{ padding: "12px 16px", borderRadius: "var(--radius)", border: "1px solid var(--border)", color: "var(--text-muted)", fontSize: 14 }}>
                 Registrarse
               </Link>
             </div>

@@ -47,10 +47,10 @@ export default async function Home() {
               Los mejores productos de tecnología con envío a todo el país y hasta 12 cuotas sin interés.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <Link href="/products" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "white", color: "#4f46e5", fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(0,0,0,0.25)", letterSpacing: "-0.01em", transition: "transform 0.15s" }}>
+              <Link href="/products" className="btn-hero-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "white", color: "#4f46e5", fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(0,0,0,0.25)", letterSpacing: "-0.01em" }}>
                 Ver catálogo →
               </Link>
-              <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", fontWeight: 600, fontSize: 15, backdropFilter: "blur(10px)", letterSpacing: "-0.01em" }}>
+              <Link href="/register" className="btn-hero-outline" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", fontWeight: 600, fontSize: 15, backdropFilter: "blur(10px)", letterSpacing: "-0.01em" }}>
                 Crear cuenta gratis
               </Link>
             </div>
@@ -85,7 +85,7 @@ export default async function Home() {
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {cats.map((c) => (
-                <Link key={c.id} href={`/products?category=${c.slug}`} style={{
+                <Link key={c.id} href={`/products?category=${c.slug}`} className="btn-cat" style={{
                   padding: "10px 22px",
                   borderRadius: 99,
                   fontSize: 14,
@@ -93,7 +93,6 @@ export default async function Home() {
                   color: "var(--primary)",
                   background: "var(--primary-bg)",
                   border: "1px solid transparent",
-                  transition: "all 0.15s",
                   letterSpacing: "0.01em",
                 }}>
                   {c.name}
@@ -110,7 +109,7 @@ export default async function Home() {
               <h2 style={{ fontSize: 28, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em", lineHeight: 1.1 }}>Productos destacados</h2>
               <p style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>{rows.length} productos disponibles</p>
             </div>
-            <Link href="/products" style={{ fontSize: 14, fontWeight: 600, color: "var(--primary)", display: "flex", alignItems: "center", gap: 4 }}>
+            <Link href="/products" className="link-text" style={{ fontSize: 14, fontWeight: 600, color: "var(--primary)", display: "flex", alignItems: "center", gap: 4 }}>
               Ver todos →
             </Link>
           </div>
@@ -142,7 +141,7 @@ export default async function Home() {
             Todas las tarjetas de crédito. Débito, efectivo y transferencia también aceptados.
           </p>
         </div>
-        <Link href="/products" style={{ position: "relative", zIndex: 1, display: "inline-flex", alignItems: "center", gap: 8, padding: "16px 32px", borderRadius: 99, background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(99,102,241,0.4)", whiteSpace: "nowrap", flexShrink: 0 }}>
+        <Link href="/products" className="btn-primary" style={{ position: "relative", zIndex: 1, display: "inline-flex", alignItems: "center", gap: 8, padding: "16px 32px", borderRadius: 99, background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(99,102,241,0.4)", whiteSpace: "nowrap", flexShrink: 0 }}>
           Comprar ahora →
         </Link>
       </section>
