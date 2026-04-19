@@ -1,11 +1,13 @@
 "use client";
 import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
+import { useCart } from "@/store/cart";
 
 export function SignOutBtn() {
+  const clear = useCart((s) => s.clear);
   return (
     <button
-      onClick={() => signOut({ callbackUrl: "/" })}
+      onClick={() => { clear(); signOut({ callbackUrl: "/" }); }}
       className="btn-danger"
       style={{
         display: "flex", alignItems: "center", justifyContent: "center", gap: 10,

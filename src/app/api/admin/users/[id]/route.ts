@@ -24,6 +24,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const selfId = (session!.user as any).id;
   if (id === selfId) return NextResponse.json({ error: "No podés eliminar tu propia cuenta" }, { status: 400 });
 
-  await db.delete(users).where(eq(users.id, id));
-  return NextResponse.json({ ok: true });
+  try {
+    await db.delete(users).where(eq(users.id, id));
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "No se pudo eliminar el usuario. Puede tener datos relacionados." }, { status: 500 });
+  }
 }

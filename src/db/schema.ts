@@ -54,6 +54,7 @@ export const sessions = pgTable("sessions", {
 });
 
 export const verificationTokens = pgTable("verification_tokens", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   identifier: text("identifier").notNull(),
   token: text("token").notNull(),
   expires: timestamp("expires").notNull(),
@@ -80,7 +81,7 @@ export const products = pgTable("products", {
 
 export const orders = pgTable("orders", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id").notNull().references(() => users.id),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   status: orderStatusEnum("status").default("PENDING").notNull(),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   mpPaymentId: text("mp_payment_id"),

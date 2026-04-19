@@ -165,7 +165,7 @@ export function Navbar() {
                   </div>
 
                   <div style={{ padding: "6px", borderTop: "1px solid var(--border)" }}>
-                    <button onClick={() => { setDropdownOpen(false); signOut({ callbackUrl: "/" }); }}
+                    <button onClick={() => { setDropdownOpen(false); useCart.getState().clear(); signOut({ callbackUrl: "/" }); }}
                       className="btn-danger"
                       style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: "var(--radius-sm)", color: "var(--danger)", fontSize: 14, fontWeight: 500, width: "100%", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" }}
                     >

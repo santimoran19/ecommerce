@@ -17,13 +17,17 @@ export async function POST(req: NextRequest) {
   if (existing) return NextResponse.json({ error: "El email ya está registrado" }, { status: 400 });
 
   const hashed = await bcrypt.hash(password, 10);
-  await db.insert(users).values({
-    name: name || null,
-    email,
-    password: hashed,
-    role: role ?? "USER",
-    emailVerified: new Date(),
-  });
+  try {
+    await db.insert(users).values({
+      name: name || null,
+      email,
+      password: hashed,
+      role: role ?? "USER",
+      emailVerified: new Date(),
+    });
+  } catch {
+    return NextResponse.json({ error: "Error al crear el usuario" }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
