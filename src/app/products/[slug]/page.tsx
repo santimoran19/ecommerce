@@ -3,6 +3,8 @@ import { products, categories } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { AddToCart } from "@/components/add-to-cart";
 import { ProductCarousel } from "@/components/product-carousel";
+import { ReviewSection } from "@/components/review-section";
+import { QASection } from "@/components/qa-section";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle, Truck, CreditCard, Shield } from "lucide-react";
@@ -66,8 +68,6 @@ export default async function ProductPage({ params }: Props) {
             )}
           </div>
 
-          <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.7 }}>{p.description}</p>
-
           <AddToCart id={p.id} name={p.name} price={Number(p.price)} image={p.images?.[0]} disabled={p.stock === 0} />
 
           <div style={{ borderRadius: "var(--radius)", background: "var(--bg-card)", border: "1px solid var(--border)", overflow: "hidden" }}>
@@ -80,6 +80,22 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* ── Description ── */}
+      {p.description && (
+        <section style={{ marginTop: 56, paddingTop: 48, borderTop: "1px solid var(--border)" }}>
+          <h2 style={{ fontSize: 22, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.03em", marginBottom: 24 }}>Descripción del producto</h2>
+          <div style={{ maxWidth: 800, background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "32px 36px" }}>
+            <p style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{p.description}</p>
+          </div>
+        </section>
+      )}
+
+      {/* ── Q&A ── */}
+      <QASection productId={p.id} />
+
+      {/* ── Reviews ── */}
+      <ReviewSection productId={p.id} />
     </div>
   );
 }
