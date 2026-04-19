@@ -36,7 +36,7 @@ export function ProductsTable({ rows, cats }: { rows: Row[]; cats: Category[] })
   return (
     <div>
       {/* Filters */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20, padding: "16px", borderRadius: "var(--radius)", background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+      <div className="admin-filters" style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 20, padding: "16px", borderRadius: "var(--radius)", background: "var(--bg-card)", border: "1px solid var(--border)" }}>
         <div style={{ position: "relative", flex: "1 1 200px" }}>
           <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none" }} />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar producto..." style={{ ...inputSt, paddingLeft: 32 }} />

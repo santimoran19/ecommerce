@@ -15,6 +15,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     price: String(body.price),
     stock: Number(body.stock),
     categoryId: body.categoryId,
+    images: body.images ?? [],
   }).where(eq(products.id, id));
   return NextResponse.json({ ok: true });
 }

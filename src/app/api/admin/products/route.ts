@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     price: String(body.price),
     stock: Number(body.stock),
     categoryId: body.categoryId,
-    images: [],
+    images: body.images ?? [],
   }).returning();
   return NextResponse.json(product);
 }

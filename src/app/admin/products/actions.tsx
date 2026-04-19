@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, Plus, X, ImagePlus, Minus } from "lucide-react";
+import { Pencil, Trash2, Plus, X, ImagePlus, Minus, Upload } from "lucide-react";
 
 type Category = { id: string; name: string; slug: string };
 type Product = { id: string; name: string; slug: string; description: string; price: string; stock: number; categoryId: string; images: string[] | null };
@@ -48,6 +48,21 @@ function ProductForm({ product, categories, onClose }: { product?: Product; cate
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState<Record<number, boolean>>({});
+
+  async function handleFileUpload(i: number, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(prev => ({ ...prev, [i]: true }));
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    setUploading(prev => ({ ...prev, [i]: false }));
+    if (data.url) setImage(i, data.url);
+    else setError(data.error ?? "Error al subir imagen");
+    e.target.value = "";
+  }
 
   function autoSlug(name: string) {
     return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
@@ -111,7 +126,7 @@ function ProductForm({ product, categories, onClose }: { product?: Product; cate
 
         <div style={{ gridColumn: "1 / -1" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.04em" }}>IMÁGENES (URLs)</label>
+            <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.04em" }}>IMÁGENES</label>
             <button type="button" onClick={() => setForm({ ...form, images: [...form.images, ""] })} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--primary)", background: "none", border: "none", cursor: "pointer" }}>
               <ImagePlus size={14} /> Agregar imagen
             </button>
@@ -119,8 +134,15 @@ function ProductForm({ product, categories, onClose }: { product?: Product; cate
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {form.images.map((img, i) => (
               <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                {img && <img src={img} alt="" style={{ width: 40, height: 40, borderRadius: 6, objectFit: "cover", border: "1px solid var(--border)", flexShrink: 0 }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                <input value={img} onChange={e => setImage(i, e.target.value)} placeholder={`https://... (imagen ${i + 1})`} style={{ ...inputStyle, flex: 1 }} />
+                {img
+                  ? <img src={img} alt="" style={{ width: 44, height: 44, borderRadius: 6, objectFit: "cover", border: "1px solid var(--border)", flexShrink: 0 }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  : <div style={{ width: 44, height: 44, borderRadius: 6, border: "1px dashed var(--border)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}><ImagePlus size={16} color="var(--text-light)" /></div>
+                }
+                <label style={{ display: "flex", alignItems: "center", gap: 5, padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", background: "var(--bg)", color: uploading[i] ? "var(--text-muted)" : "var(--text)", fontSize: 12, fontWeight: 600, cursor: uploading[i] ? "not-allowed" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}>
+                  <Upload size={13} /> {uploading[i] ? "Subiendo..." : "Subir archivo"}
+                  <input type="file" accept="image/*" style={{ display: "none" }} disabled={uploading[i]} onChange={e => handleFileUpload(i, e)} />
+                </label>
+                <input value={img} onChange={e => setImage(i, e.target.value)} placeholder="o pegar URL..." style={{ ...inputStyle, flex: 1, fontSize: 12 }} />
                 {form.images.length > 1 && (
                   <button type="button" onClick={() => setForm({ ...form, images: form.images.filter((_, j) => j !== i) })} style={{ padding: 6, background: "none", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", cursor: "pointer", color: "#dc2626", flexShrink: 0 }}>
                     <Minus size={14} />
