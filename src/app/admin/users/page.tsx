@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { users, orders } from "@/db/schema";
 import { eq, count, sql } from "drizzle-orm";
 import { UsersTable } from "./users-table";
+import { CreateUserButton } from "./user-actions";
 import { Users, ShieldCheck, Mail } from "lucide-react";
 
 export default async function AdminUsersPage() {
@@ -22,9 +23,12 @@ export default async function AdminUsersPage() {
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px 60px" }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.04em" }}>Usuarios</h1>
-        <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>{allUsers.length} usuarios registrados</p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.04em" }}>Usuarios</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: 4 }}>{allUsers.length} usuarios registrados</p>
+        </div>
+        <CreateUserButton />
       </div>
 
       {/* Stats */}

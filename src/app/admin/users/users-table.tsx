@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { UserRoleToggle } from "./user-actions";
+import { UserRoleToggle, DeleteUserButton } from "./user-actions";
 import { Search, X, Calendar } from "lucide-react";
 
 type UserRow = { id: string; name: string | null; email: string; role: string; emailVerified: Date | null; image: string | null; createdAt: Date; totalOrders: number; totalSpent: string };
@@ -71,7 +71,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
             <thead>
               <tr style={{ background: "var(--bg-subtle)" }}>
-                {["Usuario", "Email", "Rol", "Pedidos", "Total gastado", "Verificado", "Registrado"].map(h => (
+                {["Usuario", "Email", "Rol", "Pedidos", "Total gastado", "Verificado", "Registrado", ""].map(h => (
                   <th key={h} style={{ padding: "12px 20px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{h}</th>
                 ))}
               </tr>
@@ -108,11 +108,14 @@ export function UsersTable({ users }: { users: UserRow[] }) {
                         {new Date(u.createdAt).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}
                       </div>
                     </td>
+                    <td style={{ padding: "14px 20px" }}>
+                      <DeleteUserButton userId={u.id} userName={u.name ?? u.email} />
+                    </td>
                   </tr>
                 );
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={7} style={{ padding: "48px", textAlign: "center", color: "var(--text-muted)" }}>Sin resultados</td></tr>
+                <tr><td colSpan={8} style={{ padding: "48px", textAlign: "center", color: "var(--text-muted)" }}>Sin resultados</td></tr>
               )}
             </tbody>
           </table>

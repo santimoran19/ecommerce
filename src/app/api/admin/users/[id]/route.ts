@@ -15,3 +15,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   await db.update(users).set({ role }).where(eq(users.id, id));
   return NextResponse.json({ ok: true });
 }
+
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  if ((session?.user as any)?.role !== "ADMIN") return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+
+  const { id } = await params;
+  const selfId = (session!.user as any).id;
+  if (id === selfId) return NextResponse.json({ error: "No podés eliminar tu propia cuenta" }, { status: 400 });
+
+  await db.delete(users).where(eq(users.id, id));
+  return NextResponse.json({ ok: true });
+}
