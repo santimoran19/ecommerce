@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { CheckCircle, AlertCircle } from "lucide-react";
 
 export default function ProfileForm({ initialName, initialImage }: { initialName: string; initialImage: string }) {
   const router = useRouter();
+  const { update } = useSession();
   const [name, setName] = useState(initialName);
   const [image, setImage] = useState(initialImage);
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function ProfileForm({ initialName, initialImage }: { initialName
       body: JSON.stringify({ name, image }),
     });
     setLoading(false);
-    if (res.ok) { setSuccess(true); router.refresh(); }
+    if (res.ok) { setSuccess(true); await update(); router.refresh(); }
     else setError("Error al guardar los cambios");
   }
 

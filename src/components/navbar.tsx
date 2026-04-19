@@ -82,8 +82,8 @@ export function Navbar() {
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {isAdmin && (
-            <Link href="/admin" title="Panel Admin" style={{ padding: 8, borderRadius: "var(--radius-sm)", color: "var(--text-muted)", display: "flex" }} className="btn-icon hidden md:flex">
-              <Shield size={19} />
+            <Link href="/admin" title="Panel Admin" className="btn-admin hidden md:flex" style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 13px", borderRadius: "var(--radius-sm)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontSize: 13, fontWeight: 700 }}>
+              <Shield size={15} /> Admin
             </Link>
           )}
 

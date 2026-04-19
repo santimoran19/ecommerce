@@ -29,13 +29,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div>
                 <p style={{ fontWeight: 700, fontSize: 13, color: "var(--text)", marginBottom: 14, letterSpacing: "0.05em", textTransform: "uppercase" }}>Tienda</p>
                 {[["Inicio", "/"], ["Catálogo", "/products"], ["Carrito", "/cart"]].map(([l, h]) => (
-                  <Link key={h} href={h} style={{ display: "block", fontSize: 14, color: "var(--text-muted)", marginBottom: 8 }}>{l}</Link>
+                  <Link key={h} href={h} className="footer-link" style={{ display: "block", fontSize: 14, marginBottom: 8 }}>{l}</Link>
                 ))}
               </div>
               <div>
                 <p style={{ fontWeight: 700, fontSize: 13, color: "var(--text)", marginBottom: 14, letterSpacing: "0.05em", textTransform: "uppercase" }}>Cuenta</p>
                 {[["Iniciar sesión", "/login"], ["Registrarse", "/register"], ["Admin", "/admin"]].map(([l, h]) => (
-                  <Link key={h} href={h} style={{ display: "block", fontSize: 14, color: "var(--text-muted)", marginBottom: 8 }}>{l}</Link>
+                  <Link key={h} href={h} className="footer-link" style={{ display: "block", fontSize: 14, marginBottom: 8 }}>{l}</Link>
                 ))}
               </div>
               <div>

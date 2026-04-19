@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import { OrderStatusSelect, DeleteOrderButton } from "./order-actions";
-import { Package, Search, X } from "lucide-react";
+import { Package, Search, X, ArrowUpDown } from "lucide-react";
 
 const STATUSES = [
   { value: "PENDING",   label: "Pendiente",  color: "#d97706", bg: "#fef3c7" },
@@ -21,43 +21,67 @@ const inputSt: React.CSSProperties = { padding: "9px 12px", borderRadius: "var(-
 export function OrdersTable({ rows }: { rows: Row[] }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [priceMin, setPriceMin] = useState("");
-  const [priceMax, setPriceMax] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
   const [catSearch, setCatSearch] = useState("");
+  const [dateSortDir, setDateSortDir] = useState<"asc" | "desc" | null>("desc");
+  const [priceSortDir, setPriceSortDir] = useState<"asc" | "desc" | null>(null);
 
-  const filtered = useMemo(() => rows.filter(({ order: o, user: u, items }) => {
-    if (search) {
-      const q = search.toLowerCase();
-      const matchUser = (u?.name ?? u?.email ?? "").toLowerCase().includes(q);
-      const matchId = o.id.toLowerCase().includes(q);
-      if (!matchUser && !matchId) return false;
-    }
-    if (statusFilter !== "all" && o.status !== statusFilter) return false;
-    if (priceMin && Number(o.total) < Number(priceMin)) return false;
-    if (priceMax && Number(o.total) > Number(priceMax)) return false;
-    if (dateFrom && new Date(o.createdAt) < new Date(dateFrom)) return false;
-    if (dateTo && new Date(o.createdAt) > new Date(dateTo + "T23:59:59")) return false;
-    if (catSearch) {
-      const q = catSearch.toLowerCase();
-      if (!items.some(i => (i.name ?? "").toLowerCase().includes(q))) return false;
-    }
-    return true;
-  }), [rows, search, statusFilter, priceMin, priceMax, dateFrom, dateTo, catSearch]);
+  function toggleDateSort() {
+    setDateSortDir(d => d === null ? "desc" : d === "desc" ? "asc" : null);
+  }
+  function togglePriceSort() {
+    setPriceSortDir(d => d === null ? "desc" : d === "desc" ? "asc" : null);
+  }
 
-  const hasFilters = search || statusFilter !== "all" || priceMin || priceMax || dateFrom || dateTo || catSearch;
+  const filtered = useMemo(() => {
+    const result = rows.filter(({ order: o, user: u, items }) => {
+      if (search) {
+        const q = search.toLowerCase();
+        const matchUser = (u?.name ?? u?.email ?? "").toLowerCase().includes(q);
+        const matchId = o.id.toLowerCase().includes(q);
+        if (!matchUser && !matchId) return false;
+      }
+      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+      if (catSearch) {
+        const q = catSearch.toLowerCase();
+        if (!items.some(i => (i.name ?? "").toLowerCase().includes(q))) return false;
+      }
+      return true;
+    });
+    result.sort((a, b) => {
+      if (dateSortDir) {
+        const diff = new Date(a.order.createdAt).getTime() - new Date(b.order.createdAt).getTime();
+        if (diff !== 0) return dateSortDir === "desc" ? -diff : diff;
+      }
+      if (priceSortDir) {
+        const diff = Number(a.order.total) - Number(b.order.total);
+        if (diff !== 0) return priceSortDir === "desc" ? -diff : diff;
+      }
+      return 0;
+    });
+    return result;
+  }, [rows, search, statusFilter, catSearch, dateSortDir, priceSortDir]);
+
+  const hasFilters = search || statusFilter !== "all" || catSearch;
 
   function clearFilters() {
-    setSearch(""); setStatusFilter("all"); setPriceMin(""); setPriceMax("");
-    setDateFrom(""); setDateTo(""); setCatSearch("");
+    setSearch(""); setStatusFilter("all"); setCatSearch("");
   }
+
+  const sortBtnStyle = (active: boolean): React.CSSProperties => ({
+    display: "flex", alignItems: "center", gap: 5,
+    padding: "9px 14px", borderRadius: "var(--radius-sm)", fontSize: 12, fontWeight: 700,
+    cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
+    border: active ? "1px solid var(--primary)" : "1px solid var(--border)",
+    background: active ? "var(--primary-bg)" : "var(--bg-card)",
+    color: active ? "var(--primary)" : "var(--text-muted)",
+    transition: "all 0.15s",
+  });
 
   return (
     <div>
-      {/* Filters — single scrollable row */}
-      <div style={{ marginBottom: 20, padding: "14px 16px", borderRadius: "var(--radius)", background: "var(--bg-card)", border: "1px solid var(--border)", overflowX: "auto" }}>
-        <div style={{ display: "flex", gap: 10, alignItems: "center", minWidth: "max-content" }}>
+      {/* Filters */}
+      <div style={{ marginBottom: 20, padding: "14px 16px", borderRadius: "var(--radius)", background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
           <div style={{ position: "relative" }}>
             <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none" }} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Cliente o ID..." style={{ ...inputSt, width: 170, paddingLeft: 32 }} />
@@ -67,10 +91,12 @@ export function OrdersTable({ rows }: { rows: Row[] }) {
             {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
           <input value={catSearch} onChange={e => setCatSearch(e.target.value)} placeholder="Producto..." style={{ ...inputSt, width: 150 }} />
-          <input type="number" value={priceMin} onChange={e => setPriceMin(e.target.value)} placeholder="Total min" style={{ ...inputSt, width: 110 }} />
-          <input type="number" value={priceMax} onChange={e => setPriceMax(e.target.value)} placeholder="Total max" style={{ ...inputSt, width: 110 }} />
-          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ ...inputSt, width: 140 }} />
-          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ ...inputSt, width: 140 }} />
+          <button onClick={toggleDateSort} style={sortBtnStyle(dateSortDir !== null)}>
+            <ArrowUpDown size={13} /> Fecha {dateSortDir === "desc" ? "↓" : dateSortDir === "asc" ? "↑" : ""}
+          </button>
+          <button onClick={togglePriceSort} style={sortBtnStyle(priceSortDir !== null)}>
+            <ArrowUpDown size={13} /> Total {priceSortDir === "desc" ? "↓" : priceSortDir === "asc" ? "↑" : ""}
+          </button>
           {hasFilters && (
             <button onClick={clearFilters} className="btn-clear" style={{ display: "flex", alignItems: "center", gap: 5, padding: "9px 14px", borderRadius: "var(--radius-sm)", border: "1px solid #fecaca", background: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}>
               <X size={13} /> Limpiar
