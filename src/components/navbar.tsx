@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useCart } from "@/store/cart";
-import { ShoppingCart, Store, Menu, X, Shield, User, Package, Settings, LogOut, ChevronDown } from "lucide-react";
+import { ShoppingCart, Store, Shield, User, Package, LogOut, ChevronDown } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -9,7 +9,6 @@ import { useSession, signOut } from "next-auth/react";
 export function Navbar() {
   const items = useCart((s) => s.items);
   const count = items.reduce((a, x) => a + x.quantity, 0);
-  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -52,7 +51,7 @@ export function Navbar() {
   const initials = (user?.name || user?.email || "U").slice(0, 2).toUpperCase();
 
   return (
-    <nav className="sticky top-0 z-50" style={navStyle}>
+    <nav style={{ ...navStyle, position: "sticky", top: 0, zIndex: 50 }}>
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
 
         {/* Logo */}
@@ -64,7 +63,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }} className="hidden md:flex">
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }} className="nav-desktop">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="nav-link" style={{
               padding: "8px 16px",
@@ -82,7 +81,7 @@ export function Navbar() {
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {isAdmin && (
-            <Link href="/admin" title="Panel Admin" className="btn-admin hidden md:flex" style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 13px", borderRadius: "var(--radius-sm)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontSize: 13, fontWeight: 700 }}>
+            <Link href="/admin" title="Panel Admin" className="btn-admin nav-desktop" style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 13px", borderRadius: "var(--radius-sm)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontSize: 13, fontWeight: 700 }}>
               <Shield size={15} /> Admin
             </Link>
           )}
@@ -105,7 +104,7 @@ export function Navbar() {
 
           {/* User area */}
           {user ? (
-            <div ref={dropdownRef} style={{ position: "relative" }} className="hidden md:block">
+            <div ref={dropdownRef} style={{ position: "relative" }} className="nav-desktop">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 12px 6px 6px", borderRadius: "var(--radius-full)", border: "1px solid var(--border)", background: "var(--bg-card)", cursor: "pointer", transition: "all 0.15s" }}
@@ -177,7 +176,7 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="btn-primary hidden md:flex" style={{
+            <Link href="/login" className="btn-primary nav-desktop" style={{
               padding: "9px 20px",
               borderRadius: "var(--radius-full)",
               background: "linear-gradient(135deg, var(--primary), #8b5cf6)",
@@ -191,61 +190,8 @@ export function Navbar() {
             </Link>
           )}
 
-          <button onClick={() => setOpen(!open)} className="md:hidden" style={{ padding: 8, color: "var(--text)", background: "none", border: "none", cursor: "pointer" }}>
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <div style={{ borderTop: "1px solid var(--border)", background: "var(--bg-card)", padding: "16px 24px 20px" }}>
-          {links.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} style={{ display: "block", padding: "12px 0", fontSize: 15, fontWeight: 500, color: isActive(l.href) ? "var(--primary)" : "var(--text)", borderBottom: "1px solid var(--border)" }}>
-              {l.label}
-            </Link>
-          ))}
-
-          {user ? (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: "1px solid var(--border)" }}>
-                {(user as any).image ? (
-                  <img src={(user as any).image} alt="" style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover" }} />
-                ) : (
-                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 900, color: "white" }}>
-                    {initials}
-                  </div>
-                )}
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)" }}>{user.name || "Usuario"}</div>
-                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{user.email}</div>
-                </div>
-              </div>
-              {[
-                { href: "/profile", label: "Mi perfil" },
-                { href: "/profile/orders", label: "Mis pedidos" },
-                ...(isAdmin ? [{ href: "/admin", label: "Panel Admin" }] : []),
-              ].map(item => (
-                <Link key={item.href} href={item.href} onClick={() => setOpen(false)} style={{ display: "block", padding: "12px 0", fontSize: 14, fontWeight: 500, color: "var(--text)", borderBottom: "1px solid var(--border)" }}>
-                  {item.label}
-                </Link>
-              ))}
-              <button onClick={() => { setOpen(false); signOut({ callbackUrl: "/" }); }} style={{ width: "100%", marginTop: 12, padding: 12, borderRadius: "var(--radius)", border: "1px solid #fecaca", background: "#fef2f2", color: "var(--danger)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
-                Cerrar sesión
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-              <Link href="/login" onClick={() => setOpen(false)} className="btn-primary" style={{ flex: 1, padding: "12px", borderRadius: "var(--radius)", background: "linear-gradient(135deg, var(--primary), #8b5cf6)", color: "white", fontWeight: 600, fontSize: 14, textAlign: "center" }}>
-                Ingresar
-              </Link>
-              <Link href="/register" onClick={() => setOpen(false)} className="btn-ghost" style={{ padding: "12px 16px", borderRadius: "var(--radius)", border: "1px solid var(--border)", color: "var(--text-muted)", fontSize: 14 }}>
-                Registrarse
-              </Link>
-            </div>
-          )}
-        </div>
-      )}
     </nav>
   );
 }

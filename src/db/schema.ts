@@ -85,6 +85,19 @@ export const orders = pgTable("orders", {
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   mpPaymentId: text("mp_payment_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  shippingFirstName: text("shipping_first_name"),
+  shippingLastName:  text("shipping_last_name"),
+  shippingAddress:   text("shipping_address"),
+  shippingCity:      text("shipping_city"),
+  shippingProvince:  text("shipping_province"),
+  shippingZip:       text("shipping_zip"),
+  shippingPhone:     text("shipping_phone"),
+  shippingMethod:    text("shipping_method"),
+  shippingCost:      decimal("shipping_cost", { precision: 10, scale: 2 }),
+  billingType:       text("billing_type"),
+  billingName:       text("billing_name"),
+  billingDoc:        text("billing_doc"),
+  billingEmail:      text("billing_email"),
 }, (t) => [index("orders_user_idx").on(t.userId)]);
 
 export const orderItems = pgTable("order_items", {
