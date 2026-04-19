@@ -22,8 +22,9 @@ export async function POST(req: NextRequest) {
 
   await sendVerificationEmail(email, name, token);
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ecommercepro-moran.vercel.app";
   const devUrl = (!process.env.SMTP_USER || !process.env.SMTP_PASS)
-    ? `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`
+    ? `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`
     : undefined;
 
   return NextResponse.json({ ok: true, devUrl });

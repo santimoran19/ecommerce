@@ -95,6 +95,29 @@ export const orderItems = pgTable("order_items", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
 });
 
+export const productQuestions = pgTable("product_questions", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  productId: text("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  question: text("question").notNull(),
+  answer: text("answer"),
+  answeredBy: text("answered_by").references(() => users.id),
+  answeredAt: timestamp("answered_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [index("questions_product_idx").on(t.productId)]);
+
+export const reviews = pgTable("reviews", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  productId: text("product_id").notNull().references(() => products.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [
+  index("reviews_product_idx").on(t.productId),
+  uniqueIndex("reviews_user_product_idx").on(t.userId, t.productId),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),

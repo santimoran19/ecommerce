@@ -11,7 +11,8 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendVerificationEmail(email: string, name: string, token: string) {
-  const url = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ecommercepro-moran.vercel.app";
+  const url = `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
 
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     console.log(`[DEV] Verification link for ${email}: ${url}`);
