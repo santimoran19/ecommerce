@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Store, User, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { status } = useSession();
+  useEffect(() => { if (status === "authenticated") router.replace("/"); }, [status, router]);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +38,7 @@ export default function RegisterPage() {
   return (
     <div style={{ minHeight: "calc(100vh - 68px)", display: "flex" }}>
       {/* Left panel */}
-      <div style={{ flex: 1, background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, position: "relative", overflow: "hidden" }} className="hidden lg:flex">
+      <div style={{ flex: 1, background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, position: "relative", overflow: "hidden" }} className="auth-left">
         <div style={{ position: "absolute", top: -80, left: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)" }} />
         <div style={{ position: "absolute", bottom: -100, right: -60, width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
@@ -65,7 +68,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right panel */}
-      <div style={{ width: "100%", maxWidth: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 32px", background: "var(--bg)" }}>
+      <div className="auth-right" style={{ width: "100%", maxWidth: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 32px", background: "var(--bg)" }}>
         <div style={{ width: "100%", maxWidth: 420 }}>
           <div style={{ marginBottom: 32 }}>
             <h1 style={{ fontSize: 28, fontWeight: 900, color: "var(--text)", letterSpacing: "-0.04em", marginBottom: 6 }}>Crear cuenta gratis</h1>

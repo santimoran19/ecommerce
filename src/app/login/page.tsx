@@ -1,6 +1,6 @@
 "use client";
-import { useState, Suspense } from "react";
-import { signIn } from "next-auth/react";
+import { useState, Suspense, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Store, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
@@ -12,6 +12,8 @@ function LoginForm() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { status } = useSession();
+  useEffect(() => { if (status === "authenticated") router.replace("/"); }, [status, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -87,7 +89,7 @@ export default function LoginPage() {
   return (
     <div style={{ minHeight: "calc(100vh - 68px)", display: "flex" }}>
       {/* Left panel */}
-      <div style={{ flex: 1, background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, position: "relative", overflow: "hidden" }} className="hidden lg:flex">
+      <div style={{ flex: 1, background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 48, position: "relative", overflow: "hidden" }} className="auth-left">
         <div style={{ position: "absolute", top: -100, right: -100, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
           <div style={{ width: 72, height: 72, borderRadius: 20, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 28px" }}>
@@ -104,7 +106,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right panel */}
-      <div style={{ width: "100%", maxWidth: 480, display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 32px", background: "var(--bg)" }}>
+      <div className="auth-right" style={{ width: "100%", maxWidth: 480, display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 32px", background: "var(--bg)" }}>
         <Suspense>
           <LoginForm />
         </Suspense>

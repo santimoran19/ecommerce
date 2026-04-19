@@ -2,15 +2,24 @@
 import { useCart } from "@/store/cart";
 import { ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
 
 type Props = { id: string; name: string; price: number; image?: string; disabled?: boolean };
 
 export function AddToCart({ id, name, price, image, disabled }: Props) {
+  const { data: session, status } = useSession();
   const add = useCart((s) => s.add);
   const [added, setAdded] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   function handleAdd() {
     if (disabled) return;
+    if (status !== "authenticated") {
+      router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+      return;
+    }
     add({ id, name, price, image: image ?? "" });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
@@ -29,7 +38,11 @@ export function AddToCart({ id, name, price, image, disabled }: Props) {
         gap: 8,
         padding: "11px 16px",
         borderRadius: "var(--radius-sm)",
-        background: disabled ? "var(--border)" : added ? "#16a34a" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
+        background: disabled
+          ? "var(--border)"
+          : added
+          ? "#16a34a"
+          : "linear-gradient(135deg, var(--primary), #8b5cf6)",
         color: disabled ? "var(--text-muted)" : "white",
         fontSize: 13,
         fontWeight: 600,
@@ -37,12 +50,16 @@ export function AddToCart({ id, name, price, image, disabled }: Props) {
         cursor: disabled ? "not-allowed" : "pointer",
         transition: "all 0.2s",
         letterSpacing: "0.01em",
-        boxShadow: disabled ? "none" : added ? "0 2px 8px rgba(22,163,74,0.35)" : "0 2px 8px rgba(99,102,241,0.3)",
+        boxShadow: disabled
+          ? "none"
+          : added
+          ? "0 2px 8px rgba(22,163,74,0.35)"
+          : "0 2px 8px rgba(99,102,241,0.3)",
         transform: added ? "scale(0.98)" : "scale(1)",
       }}
     >
       {added ? <Check size={16} /> : <ShoppingCart size={16} />}
-      {disabled ? "Sin stock" : added ? "¡Agregado!" : "Agregar al carrito"}
+      {disabled ? "Sin stock" : added ? "¡Agregado!" : "Añadir al carrito"}
     </button>
   );
 }

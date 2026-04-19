@@ -41,7 +41,7 @@ export default async function ProductsPage({ searchParams }: Props) {
       <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: 28, alignItems: "start" }} className="catalog-grid">
         {/* Sidebar */}
         <aside>
-          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "24px", boxShadow: "var(--shadow-sm)", position: "sticky", top: 88 }}>
+          <div className="sidebar-sticky" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "24px", boxShadow: "var(--shadow-sm)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
               <SlidersHorizontal size={16} color="var(--primary)" />
               <h2 style={{ fontSize: 15, fontWeight: 800, color: "var(--text)", letterSpacing: "-0.01em" }}>Filtros</h2>

@@ -4,8 +4,10 @@ import { desc, eq } from "drizzle-orm";
 import { ProductCard } from "@/components/product-card";
 import Link from "next/link";
 import { ShieldCheck, Truck, CreditCard, Headphones } from "lucide-react";
+import { auth } from "@/lib/auth";
 
 export default async function Home() {
+  const session = await auth();
   const [rows, cats] = await Promise.all([
     db.select({ product: products, category: categories })
       .from(products)
@@ -50,9 +52,11 @@ export default async function Home() {
               <Link href="/products" className="btn-hero-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "white", color: "#4f46e5", fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(0,0,0,0.25)", letterSpacing: "-0.01em" }}>
                 Ver catálogo →
               </Link>
-              <Link href="/register" className="btn-hero-outline" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", fontWeight: 600, fontSize: 15, backdropFilter: "blur(10px)", letterSpacing: "-0.01em" }}>
-                Crear cuenta gratis
-              </Link>
+              {!session && (
+                <Link href="/register" className="btn-hero-outline" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 99, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", fontWeight: 600, fontSize: 15, backdropFilter: "blur(10px)", letterSpacing: "-0.01em" }}>
+                  Crear cuenta gratis
+                </Link>
+              )}
             </div>
           </div>
         </div>

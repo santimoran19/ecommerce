@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import ProfileForm from "./profile-form";
 import { Package, ShoppingBag, User } from "lucide-react";
+import { SignOutBtn } from "@/components/sign-out-btn";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -97,6 +98,7 @@ export default async function ProfilePage() {
             </div>
           </div>
         </div>
+        <SignOutBtn />
       </div>
     </div>
   );

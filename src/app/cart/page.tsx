@@ -1,34 +1,21 @@
 "use client";
 import { useCart } from "@/store/cart";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Lock } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function CartPage() {
-  const { items, remove, setQty, total, clear } = useCart();
+  const { items, remove, setQty, total } = useCart();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [mpError, setMpError] = useState("");
+  const { data: session, status } = useSession();
 
-  async function handleCheckout() {
-    setLoading(true);
-    setMpError("");
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
-      });
-      if (res.status === 401) { router.push("/login"); return; }
-      const data = await res.json();
-      if (data.initPoint) { clear(); window.location.href = data.initPoint; return; }
-      if (data.error) setMpError(data.message ?? "Error al procesar el pago.");
-    } catch {
-      setMpError("Error de conexión. Intentá de nuevo.");
-    } finally {
-      setLoading(false);
+  function handleCheckout() {
+    if (status !== "authenticated") {
+      router.push("/login?callbackUrl=/checkout");
+      return;
     }
+    router.push("/checkout");
   }
 
   if (items.length === 0) {
@@ -104,26 +91,25 @@ export default function CartPage() {
             ))}
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "var(--text-muted)", marginBottom: 8 }}>
-            <span>Envío</span><span style={{ color: "var(--success)", fontWeight: 600 }}>Gratis 🎉</span>
+            <span>Envío</span><span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Calculado al pagar</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 22, fontWeight: 900, color: "var(--text)", marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)", letterSpacing: "-0.03em" }}>
-            <span>Total</span>
+            <span>Subtotal</span>
             <span style={{ color: "var(--primary)" }}>${total().toLocaleString("es-AR")}</span>
           </div>
-          <button onClick={handleCheckout} disabled={loading} className={loading ? "" : "btn-primary"} style={{
-            width: "100%", marginTop: 20, padding: "15px", borderRadius: "var(--radius-sm)",
-            background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
-            color: "white", fontWeight: 700, fontSize: 15, border: "none", cursor: loading ? "not-allowed" : "pointer",
-            boxShadow: "0 4px 16px rgba(99,102,241,0.35)", letterSpacing: "-0.01em",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-          }}>
-            {loading ? "Procesando..." : <><Lock size={15} /> Pagar con Mercado Pago</>}
+          <button
+            onClick={handleCheckout}
+            className="btn-primary"
+            style={{
+              width: "100%", marginTop: 20, padding: "15px", borderRadius: "var(--radius-sm)",
+              background: "linear-gradient(135deg, var(--primary), #8b5cf6)",
+              color: "white", fontWeight: 700, fontSize: 15, border: "none", cursor: "pointer",
+              boxShadow: "0 4px 16px rgba(99,102,241,0.35)", letterSpacing: "-0.01em",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            }}
+          >
+            Continuar con la compra <ArrowRight size={15} />
           </button>
-          {mpError && (
-            <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: "var(--radius-sm)", background: "#fef3c7", border: "1px solid #fde68a", fontSize: 13, color: "#92400e", lineHeight: 1.5 }}>
-              ⚠️ {mpError}
-            </div>
-          )}
           <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 16 }}>
             {["visa", "mastercard", "amex"].map(b => (
               <span key={b} style={{ fontSize: 11, color: "var(--text-light)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{b}</span>

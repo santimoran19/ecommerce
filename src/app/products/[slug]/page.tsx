@@ -37,7 +37,7 @@ export default async function ProductPage({ params }: Props) {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" }} className="product-detail-grid">
         {/* Image carousel */}
-        <div style={{ position: "sticky", top: 88 }}>
+        <div className="product-sticky">
           <ProductCarousel images={p.images ?? []} name={p.name} />
         </div>
 
