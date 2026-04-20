@@ -78,9 +78,6 @@ function LoginForm() {
         ¿No tenés cuenta?{" "}
         <Link href="/register" style={{ color: "var(--primary)", fontWeight: 700 }}>Registrate gratis</Link>
       </p>
-      <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: "var(--radius-sm)", background: "var(--bg-subtle)", border: "1px solid var(--border)", fontSize: 13, color: "var(--text-muted)" }}>
-        <strong style={{ color: "var(--text)" }}>Demo admin:</strong> admin@demo.com / admin123
-      </div>
     </div>
   );
 }
