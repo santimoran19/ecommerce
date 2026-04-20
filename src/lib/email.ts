@@ -8,22 +8,27 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  connectionTimeout: 8000,
+  greetingTimeout: 8000,
+  socketTimeout: 10000,
 });
 
-export async function sendVerificationEmail(email: string, name: string, token: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ecommercepro-moran.vercel.app";
-  const url = `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
-
+export async function sendVerificationEmail(email: string, name: string, verifyUrl: string) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.log(`[DEV] Verification link for ${email}: ${url}`);
+    console.log(`[DEV] Verification link for ${email}: ${verifyUrl}`);
     return;
   }
 
-  await transporter.sendMail({
-    from: `"EcommercePro" <${process.env.SMTP_USER}>`,
-    to: email,
-    subject: "Verificá tu email · EcommercePro",
-    html: `
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("SMTP timeout")), 12000)
+  );
+
+  await Promise.race([
+    transporter.sendMail({
+      from: `"EcommercePro" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Verificá tu email · EcommercePro",
+      html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -46,7 +51,7 @@ export async function sendVerificationEmail(email: string, name: string, token: 
               Gracias por registrarte en EcommercePro. Para activar tu cuenta y poder ingresar, confirmá tu dirección de email haciendo click en el botón de abajo.
             </p>
             <div style="text-align:center;margin:32px 0">
-              <a href="${url}" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#ffffff;font-weight:700;font-size:15px;border-radius:50px;text-decoration:none;box-shadow:0 4px 16px rgba(99,102,241,0.4)">
+              <a href="${verifyUrl}" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#ffffff;font-weight:700;font-size:15px;border-radius:50px;text-decoration:none;box-shadow:0 4px 16px rgba(99,102,241,0.4)">
                 Verificar mi email →
               </a>
             </div>
@@ -63,5 +68,7 @@ export async function sendVerificationEmail(email: string, name: string, token: 
   </table>
 </body>
 </html>`,
-  });
+    }),
+    timeout,
+  ]);
 }

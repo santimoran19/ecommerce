@@ -24,7 +24,7 @@ export default function RegisterPage() {
     const data = await res.json();
     setLoading(false);
     if (!res.ok) { setError(data.error ?? "Error al registrar"); return; }
-    if (data.devUrl) { router.push(data.devUrl); return; }
+    if (data.verifyUrl) { router.push(data.verifyUrl); return; }
     router.push("/verify-email");
   }
 

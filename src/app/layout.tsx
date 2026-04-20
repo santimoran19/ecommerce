@@ -2,12 +2,15 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import { BottomNav } from "@/components/bottom-nav";
+import { auth } from "@/lib/auth";
 import { Store } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = { title: "EcommercePro — Tecnología al mejor precio", description: "Tienda online profesional con Mercado Pago" };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
   return (
     <html lang="es">
       <body style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -36,7 +39,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <div className="footer-col">
                 <p style={{ fontWeight: 700, fontSize: 13, color: "var(--text)", marginBottom: 14, letterSpacing: "0.05em", textTransform: "uppercase" }}>Cuenta</p>
-                {[["Iniciar sesión", "/login"], ["Registrarse", "/register"], ["Admin", "/admin"]].map(([l, h]) => (
+                {(isAdmin
+                  ? [["Iniciar sesión", "/login"], ["Registrarse", "/register"], ["Admin", "/admin"]]
+                  : [["Iniciar sesión", "/login"], ["Registrarse", "/register"]]
+                ).map(([l, h]) => (
                   <Link key={h} href={h} className="footer-link" style={{ display: "block", fontSize: 14, marginBottom: 8 }}>{l}</Link>
                 ))}
               </div>

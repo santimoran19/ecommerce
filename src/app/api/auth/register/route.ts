@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
   if (!email || !password || password.length < 6) {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
   }
+
   const [existing] = await db.select().from(users).where(eq(users.email, email));
   if (existing) return NextResponse.json({ error: "El email ya está registrado" }, { status: 400 });
 
@@ -20,12 +21,23 @@ export async function POST(req: NextRequest) {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
   await db.insert(verificationTokens).values({ identifier: email, token, expires });
 
-  await sendVerificationEmail(email, name, token);
+  // Build the verification URL using the actual request origin so it works
+  // from any host (localhost, network IP, production domain).
+  const origin =
+    req.headers.get("origin") ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    `http://${req.headers.get("host")}`;
+  const verifyUrl = `${origin}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ecommercepro-moran.vercel.app";
-  const devUrl = (!process.env.SMTP_USER || !process.env.SMTP_PASS)
-    ? `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`
-    : undefined;
+  let emailSent = false;
+  try {
+    await sendVerificationEmail(email, name, verifyUrl);
+    emailSent = true;
+  } catch (err) {
+    console.error("[register] email send failed:", err);
+  }
 
-  return NextResponse.json({ ok: true, devUrl });
+  // If email failed to send, return the verification URL directly so the
+  // user can still verify without getting stuck.
+  return NextResponse.json({ ok: true, verifyUrl: emailSent ? undefined : verifyUrl });
 }
