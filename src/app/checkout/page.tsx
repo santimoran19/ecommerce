@@ -49,6 +49,7 @@ export default function CheckoutPage() {
   const [billing, setBilling] = useState<BillingData>({ type: "consumidor_final", name: "", doc: "", email: "" });
   const [loading, setLoading] = useState(false);
   const [mpError, setMpError] = useState("");
+  const [initPoint, setInitPoint] = useState("");
 
   const subtotal = total();
   const shippingCost = shippingMethod.method === "retiro" ? 0 : subtotal >= 50000 ? 0 : 3000;
@@ -88,7 +89,7 @@ export default function CheckoutPage() {
       });
       if (res.status === 401) { router.push("/login"); return; }
       const data = await res.json();
-      if (data.initPoint) { clear(); window.location.href = data.initPoint; return; }
+      if (data.initPoint) { clear(); setInitPoint(data.initPoint); return; }
       if (data.error) setMpError(data.message ?? "Error al procesar el pago.");
     } catch {
       setMpError("Error de conexión. Intentá de nuevo.");
@@ -369,21 +370,38 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              <button
-                onClick={handlePay}
-                disabled={loading}
-                className={loading ? "" : "btn-primary"}
-                style={{
-                  width: "100%", padding: "15px", borderRadius: "var(--radius-sm)",
-                  background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
-                  color: "white", fontWeight: 700, fontSize: 16, border: "none",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  boxShadow: loading ? "none" : "0 4px 16px rgba(99,102,241,0.35)",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                }}
-              >
-                {loading ? "Procesando..." : <><CreditCard size={18} /> Pagar con Mercado Pago</>}
-              </button>
+              {initPoint ? (
+                <a
+                  href={initPoint}
+                  className="btn-primary"
+                  style={{
+                    width: "100%", padding: "15px", borderRadius: "var(--radius-sm)",
+                    background: "linear-gradient(135deg, #00b33c, #009c35)",
+                    color: "white", fontWeight: 700, fontSize: 16, border: "none",
+                    boxShadow: "0 4px 16px rgba(0,179,60,0.4)",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    textDecoration: "none",
+                  }}
+                >
+                  <CreditCard size={18} /> Ir a Mercado Pago
+                </a>
+              ) : (
+                <button
+                  onClick={handlePay}
+                  disabled={loading}
+                  className={loading ? "" : "btn-primary"}
+                  style={{
+                    width: "100%", padding: "15px", borderRadius: "var(--radius-sm)",
+                    background: loading ? "var(--border)" : "linear-gradient(135deg, var(--primary), #8b5cf6)",
+                    color: "white", fontWeight: 700, fontSize: 16, border: "none",
+                    cursor: loading ? "not-allowed" : "pointer",
+                    boxShadow: loading ? "none" : "0 4px 16px rgba(99,102,241,0.35)",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  }}
+                >
+                  {loading ? "Procesando..." : <><CreditCard size={18} /> Pagar con Mercado Pago</>}
+                </button>
+              )}
               <p style={{ marginTop: 12, fontSize: 12, color: "var(--text-muted)", textAlign: "center" }}>
                 🔒 Pago 100% seguro procesado por Mercado Pago
               </p>
