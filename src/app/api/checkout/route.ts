@@ -73,14 +73,19 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const origin =
+      req.headers.get("origin") ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      `http://${req.headers.get("host")}`;
+
     const pref = await preference.create({
       body: {
         items: mpItems,
         external_reference: order.id,
         back_urls: {
-          success: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success`,
-          failure: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/failure`,
-          pending: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/pending`,
+          success: `${origin}/checkout/success`,
+          failure: `${origin}/checkout/failure`,
+          pending: `${origin}/checkout/pending`,
         },
       },
     });

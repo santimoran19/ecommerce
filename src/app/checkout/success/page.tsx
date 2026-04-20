@@ -1,6 +1,12 @@
+"use client";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useCart } from "@/store/cart";
 
 export default function SuccessPage() {
+  const clear = useCart((s) => s.clear);
+  useEffect(() => { clear(); }, [clear]);
+
   return (
     <div style={{ maxWidth: 480, margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
       <div style={{ width: 100, height: 100, borderRadius: "50%", background: "#dcfce7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
